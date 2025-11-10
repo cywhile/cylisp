@@ -7,4 +7,4 @@
       (setf add (+ (/ 1.0 n) add))
       (jish (+ 1 n)))))
 (print (jish 1))
-//hello~
+;hello~
