@@ -7,27 +7,20 @@
 (defvar *ana-answer-file* "analyzer-answer.txt")
 (defvar *ana-config-file* "analyzer-config.txt")
 (defvar *know-or-not* t)
-(defvar *ana-answer* (make-hash-table :test 'equal))
-(defvar *analyzers* (make-hash-table :test 'equal))
-
-(defun ana-init (filename)
-  (when (probe-file filename)
-    (with-open-file (stream filename :direction :input)
-      (loop for line = (read-line stream nil)
-            while line
-            do (let ((parts (split-sequence #\| line)))
-                 (when (= (length parts) 2)
-                   (setf (gethash (first parts) *ana-answer*)
-                         (second parts))))))))
-
-(defun append-role-to-file (filename topic explain)
+(hmpq `(*ana-answer* *analyzers*))
+(defun ana-init ()
+  (progn
+    (init-ans `(*ana-answer-file* *ana-answer*))
+    (init-ers *ana-config-file* *analyzers*)
+    (instance *analyzers* analyzer "analyzer")))
+;;;超级初始化函数！我们有了很多答案和实例！！
+(defun append-knowledge-to-file (filename topic explain)
   (with-open-file (out filename
                       :direction :output
                       :if-exists :append
                       :if-does-not-exist :create)
     (format out "~a|~a~%" topic explain))
   (values topic explain))
-
 (defun check (str)
   (let ((answer (gethash str *ana-answer*)))
     (if answer
@@ -35,22 +28,12 @@
         (progn
           (append-role-to-file *ana-answer-file* str "不清楚")
           "什么我不是很清楚，这是一个暂未记录的奇怪问题..."))))
-
+(defcls `("analyzer" "analyzer" "智慧的分析者" "分析" 100 "中立"))
 (defclass analyzer ()
   ((name :initarg :name :accessor ana-name :initform "智慧的分析者")
    (rspon :initarg :rspon :accessor ana-rspon :initform "分析")
    (price :initarg :price :accessor ana-price :initform 100)
    (tht :initarg :tht :accessor ana-tht :initform "中立")))
-
-(defun init-analyzer (filename)
-  (when (probe-file filename)
-    (with-open-file (stream filename :direction :input)
-      (loop for line = (read-line stream nil)
-            while line
-            do (let ((parts (split-sequence #\| line)))
-                 (when (= (length parts) 5)
-                   (destructuring-bind (a b c d e) parts
-                     (setf (gethash a *analyzers*) (list b c d e)))))))))
 (defun main-analyze (str whoana)
   (format t "你好！我是~a!~%" (ana-name whoana))
   (sleep 0.5)
