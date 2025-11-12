@@ -71,3 +71,4 @@
         (rspon :initarg :rspon :accessor ,nam2 :initform ,str2)
         (price :initarg :price :accessor ,nam3 :initform ,int3)
         (tht   :initarg :tht   :accessor ,nam4 :initform ,str4)))))
+;;;小哥哥好厉害啊！！不愧是小哥哥呢！
